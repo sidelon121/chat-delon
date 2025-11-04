@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHATdelon AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='favicon_round.png') }}?v=4" type="image/png">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon_round.png') }}?v=4" type="image/png">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container flex-between">
+            <div class="brand">
+                <div class="brand-icon-wrapper">
+                    <img src="{{ url_for('static', filename='favicon.png') }}" alt="AI DELON" class="brand-icon">
+                </div>
+                <span>AI DELON</span>
+            </div>
+            <nav class="nav">
+                <a href="/" class="nav-link">Beranda</a>
+                <a href="/chat" class="nav-link active">Chat</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="chat-container">
+        <div class="chat-wrapper">
+            <!-- Chat Messages Area -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <div class="welcome-icon">🤖</div>
+                    <h2>Halo! Saya CHATdelon AI</h2>
+                    <p>Saya siap membantu Anda. Tanyakan apa saja, dari pertanyaan umum hingga diskusi tentang apa saja
+                        yang anda inginkan.</p>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="chat-input-container">
+                <form id="chatForm" class="chat-form">
+                    <div class="input-wrapper">
+                        <textarea id="userInput" class="chat-input" placeholder="Ketik pesan Anda di sini..." rows="1"
+                            maxlength="2000"></textarea>
+                        <button type="submit" class="send-button" id="sendButton" aria-label="Kirim pesan">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="input-footer">
+                        <span class="char-count"><span id="charCount">0</span>/20000</span>
+                        <span class="ai-info">Ditenagai oleh CHATdelon AI</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>© <span id="year"></span> FARHAN AKMAL</p>
+        </div>
+    </footer>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const charCount = document.getElementById('charCount');
+
+        // Auto-resize textarea
+        userInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+            charCount.textContent = this.value.length;
+        });
+
+        // Handle Enter key (Shift+Enter for new line, Enter to send)
+        userInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (this.value.trim()) {
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            }
+        });
+
+        // Scroll to bottom function
+        function scrollToBottom() {
+            chatMessages.scrollTo({
+                top: chatMessages.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        // Add message to chat
+        function addMessage(content, isUser = false, isLoading = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+
+            if (isLoading) {
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-text">${content}</div>
+                    </div>
+                `;
+            }
+
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+            return messageDiv;
+        }
+
+        // Remove welcome message
+        function removeWelcomeMessage() {
+            const welcome = document.querySelector('.welcome-message');
+            if (welcome) {
+                welcome.remove();
+            }
+        }
+
+        // Send suggestion
+        function sendSuggestion(text) {
+            userInput.value = text;
+            userInput.style.height = 'auto';
+            userInput.style.height = Math.min(userInput.scrollHeight, 150) + 'px';
+            charCount.textContent = text.length;
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+
+        // Handle form submission
+        chatForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const message = userInput.value.trim();
+            if (!message || sendButton.disabled) return;
+
+            // Remove welcome message on first message
+            removeWelcomeMessage();
+
+            // Add user message
+            addMessage(message, true);
+
+            // Clear input
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            charCount.textContent = '0';
+
+            // Disable form
+            sendButton.disabled = true;
+            userInput.disabled = true;
+
+            // Add loading message
+            const loadingMessage = addMessage('', false, true);
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+
+                // Remove loading message
+                loadingMessage.remove();
+
+                if (data.success) {
+                    // Format response (preserve newlines)
+                    const formattedResponse = data.response.replace(/\n/g, '<br>');
+                    addMessage(formattedResponse, false);
+                } else {
+                    addMessage(`❌ Error: ${data.error || 'Terjadi kesalahan'}`, false);
+                }
+            } catch (error) {
+                loadingMessage.remove();
+                addMessage(`❌ Error: Gagal terhubung ke server. ${error.message}`, false);
+            } finally {
+                // Re-enable form
+                sendButton.disabled = false;
+                userInput.disabled = false;
+                userInput.focus();
+            }
+        });
+
+        // Get provider info on load
+        fetch('/api/provider')
+            .then(res => res.json())
+            .then(data => {
+                if (data.provider) {
+                    const badge = document.getElementById('providerBadge');
+                    const providerNames = {
+                        'openai': 'ChatGPT',
+                        'deepseek': 'DeepSeek',
+                        'groq': 'Groq',
+                        'anthropic': 'Claude'
+                    };
+                    badge.textContent = providerNames[data.provider] || 'Open Source AI';
+                }
+            })
+            .catch(err => console.log('Could not fetch provider info'));
+
+        // Set current year
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

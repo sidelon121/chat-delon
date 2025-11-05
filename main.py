@@ -114,5 +114,5 @@ def favicon():
 
 
 if __name__ == "__main__":
-    # Port disesuaikan untuk Railway
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8059)))
+    port = int(os.environ.get("PORT", 10000))  # Gunakan PORT dari Railway
+    app.run(host="0.0.0.0", port=port)

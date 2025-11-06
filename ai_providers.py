@@ -12,56 +12,56 @@ class AIProvider(ABC):
         pass
 
 
-class OpenAIProvider(AIProvider):
-    """Provider untuk OpenAI (ChatGPT)"""
+# class OpenAIProvider(AIProvider):
+#     """Provider untuk OpenAI (ChatGPT)"""
     
-    def __init__(self, api_key: str, model: str = "gpt-3.5-turbo"):
-        try:
-            from openai import OpenAI
-            self.client = OpenAI(api_key=api_key)
-            self.model = model
-        except ImportError:
-            raise ImportError("openai package tidak terinstall. Install dengan: pip install openai")
+#     def __init__(self, api_key: str, model: str = "gpt-3.5-turbo"):
+#         try:
+#             from openai import OpenAI
+#             self.client = OpenAI(api_key=api_key)
+#             self.model = model
+#         except ImportError:
+#             raise ImportError("openai package tidak terinstall. Install dengan: pip install openai")
     
-    def generate_response(self, messages: list, temperature: float = 0.7, max_tokens: int = 3000) -> str:
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            raise Exception(f"OpenAI Error: {str(e)}")
+#     def generate_response(self, messages: list, temperature: float = 0.7, max_tokens: int = 3000) -> str:
+#         try:
+#             response = self.client.chat.completions.create(
+#                 model=self.model,
+#                 messages=messages,
+#                 temperature=temperature,
+#                 max_tokens=max_tokens,
+#             )
+#             return response.choices[0].message.content
+#         except Exception as e:
+#             raise Exception(f"OpenAI Error: {str(e)}")
 
 
-class DeepSeekProvider(AIProvider):
-    """Provider untuk DeepSeek"""
+# class DeepSeekProvider(AIProvider):
+#     """Provider untuk DeepSeek"""
     
-    def __init__(self, api_key: str, model: str = "deepseek-chat"):
-        try:
-            from openai import OpenAI
-            # DeepSeek menggunakan OpenAI-compatible API
-            self.client = OpenAI(
-                api_key=api_key,
-                base_url="https://api.deepseek.com"
-            )
-            self.model = model
-        except ImportError:
-            raise ImportError("openai package tidak terinstall. Install dengan: pip install openai")
+#     def __init__(self, api_key: str, model: str = "deepseek-chat"):
+#         try:
+#             from openai import OpenAI
+#             # DeepSeek menggunakan OpenAI-compatible API
+#             self.client = OpenAI(
+#                 api_key=api_key,
+#                 base_url="https://api.deepseek.com"
+#             )
+#             self.model = model
+#         except ImportError:
+#             raise ImportError("openai package tidak terinstall. Install dengan: pip install openai")
     
-    def generate_response(self, messages: list, temperature: float = 0.7, max_tokens: int = 3000) -> str:
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            raise Exception(f"DeepSeek Error: {str(e)}")
+#     def generate_response(self, messages: list, temperature: float = 0.7, max_tokens: int = 3000) -> str:
+#         try:
+#             response = self.client.chat.completions.create(
+#                 model=self.model,
+#                 messages=messages,
+#                 temperature=temperature,
+#                 max_tokens=max_tokens,
+#             )
+#             return response.choices[0].message.content
+#         except Exception as e:
+#             raise Exception(f"DeepSeek Error: {str(e)}")
 
 
 class GroqProvider(AIProvider):
@@ -75,7 +75,7 @@ class GroqProvider(AIProvider):
         except ImportError:
             raise ImportError("groq package tidak terinstall. Install dengan: pip install groq")
     
-    def generate_response(self, messages: list, temperature: float = 0.7, max_tokens: int = 3000000) -> str:
+    def generate_response(self, messages: list, temperature: float = 0.7, max_tokens: int = 7000000) -> str:
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -99,7 +99,7 @@ class AnthropicProvider(AIProvider):
         except ImportError:
             raise ImportError("anthropic package tidak terinstall. Install dengan: pip install anthropic")
     
-    def generate_response(self, messages: list, temperature: float = 0.7, max_tokens: int = 3000) -> str:
+    def generate_response(self, messages: list, temperature: float = 0.7, max_tokens: int = 700000) -> str:
         try:
             # Anthropic menggunakan format yang berbeda
             system_message = None
@@ -145,8 +145,8 @@ def get_ai_provider(provider_name: str = None, api_key: str = None, model: str =
     # Jika api_key tidak diberikan, ambil dari environment variable berdasarkan provider
     if not api_key:
         provider_key_map = {
-            "openai": "OPENAI_API_KEY",
-            "deepseek": "DEEPSEEK_API_KEY",
+            # "openai": "OPENAI_API_KEY",
+            # "deepseek": "DEEPSEEK_API_KEY",
             "groq": "GROQ_API_KEY",
             "anthropic": "ANTHROPIC_API_KEY"
         }
@@ -155,7 +155,7 @@ def get_ai_provider(provider_name: str = None, api_key: str = None, model: str =
             api_key = os.getenv(env_key)
     
     if not api_key:
-        raise ValueError(f"❌ API key untuk {provider_name} tidak ditemukan! Pastikan file .env sudah dibuat.")
+        raise ValueError(f"❌  AI saat ini tidak tersedia, sedang tidur."} # API key untuk {provider_name} tidak ditemukan! Pastikan file .env sudah dibuat.
     
     # Jika model tidak diberikan, ambil dari environment variable atau gunakan default
     if not model:
@@ -163,15 +163,15 @@ def get_ai_provider(provider_name: str = None, api_key: str = None, model: str =
     
     # Mapping provider names ke class
     provider_map = {
-        "openai": OpenAIProvider,
-        "deepseek": DeepSeekProvider,
+        # "openai": OpenAIProvider,
+        # "deepseek": DeepSeekProvider,
         "groq": GroqProvider,
         "anthropic": AnthropicProvider,
     }
     
     provider_class = provider_map.get(provider_name)
     if not provider_class:
-        raise ValueError(f"❌ Provider '{provider_name}' tidak didukung! Pilih dari: {', '.join(provider_map.keys())}")
+        raise ValueError(f"❌  AI saat ini tidak tersedia, sedang tidur.") # Provider '{provider_name}' tidak didukung! Pilih dari: {', '.join(provider_map.keys())}")
     
     # Default models untuk setiap provider
     default_models = {
@@ -187,4 +187,4 @@ def get_ai_provider(provider_name: str = None, api_key: str = None, model: str =
     try:
         return provider_class(api_key=api_key, model=model)
     except Exception as e:
-        raise Exception(f"❌ Gagal menginisialisasi {provider_name}: {str(e)}")
+        raise Exception(f"❌  AI saat ini tidak tersedia, sedang tidur.") # Gagal menginisialisasi {provider_name}: {str(e)}")

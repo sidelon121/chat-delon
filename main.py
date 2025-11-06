@@ -39,7 +39,7 @@ def chat_api():
     if not ai_provider:
         return jsonify({
             "success": False,
-            "error": "AI Provider belum dikonfigurasi. Pastikan file .env sudah dibuat dengan benar."
+            "error": "AI Provider belum dikonfigurasi." #Pastikan file .env sudah dibuat dengan benar.
         }), 500
     
     try:
@@ -66,7 +66,7 @@ def chat_api():
             "role": "system",
             "content": (
                 "Anda adalah asisten AI bernama CHATdelon yang dibuat oleh Farhan Akmal. "
-                "Anda ramah, informatif, dan ahli di berbagai bidang. "
+                "Anda ramah, informatif, punya pengetahuan luas dan ahli di berbagai bidang. "
                 "Berikan jawaban yang jelas, spesifik, dan mudah dipahami dalam bahasa Indonesia."
                 "Jika ditanya jawab dengan jujur sesuia pengetahuan anda, kalo tidak tau jawab jujur."
             )

@@ -29,7 +29,6 @@
         </div>
     </header>
 
-<<<<<<< HEAD
     <!-- Main Chat Container dengan Sidebar -->
     <div class="chat-app-container">
         <!-- Sidebar -->
@@ -118,16 +117,10 @@
 
         <!-- Main Chat Area -->
         <div class="main-chat-area" id="mainChatArea">
-=======
-    <main class="chat-container">
-        <div class="chat-wrapper">
-            <!-- Chat Messages Area -->
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
             <div class="chat-messages" id="chatMessages">
                 <div class="welcome-message">
                     <div class="welcome-icon">🤖</div>
                     <h2>Halo! Saya CHATdelon AI</h2>
-<<<<<<< HEAD
                     <p>Saya siap membantu Anda dengan berbagai pertanyaan dan diskusi. Silakan mulai obrolan baru atau lanjutkan percakapan sebelumnya.</p>
                     
                     <div class="suggestions">
@@ -154,22 +147,6 @@
                         <textarea id="userInput" class="chat-input" placeholder="Ketik pesan Anda di sini..." rows="1" maxlength="20000"></textarea>
                         <button type="submit" class="send-button" id="sendButton" aria-label="Kirim pesan">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-=======
-                    <p>Saya siap membantu Anda. Tanyakan apa saja, dari pertanyaan umum hingga diskusi tentang apa saja
-                        yang anda inginkan.</p>
-                </div>
-            </div>
-
-            <!-- Chat Input Area -->
-            <div class="chat-input-container">
-                <form id="chatForm" class="chat-form">
-                    <div class="input-wrapper">
-                        <textarea id="userInput" class="chat-input" placeholder="Ketik pesan Anda di sini..." rows="1"
-                            maxlength="2000"></textarea>
-                        <button type="submit" class="send-button" id="sendButton" aria-label="Kirim pesan">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
                                 <line x1="22" y1="2" x2="11" y2="13"></line>
                                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                             </svg>
@@ -177,20 +154,12 @@
                     </div>
                     <div class="input-footer">
                         <span class="char-count"><span id="charCount">0</span>/20000</span>
-<<<<<<< HEAD
                         <span class="ai-info">CHATdelon AI</span>
-=======
-                        <span class="ai-info">Ditenagai oleh CHATdelon AI</span>
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
                     </div>
                 </form>
             </div>
         </div>
-<<<<<<< HEAD
     </div>
-=======
-    </main>
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
 
     <footer class="site-footer">
         <div class="container">
@@ -199,19 +168,15 @@
     </footer>
 
     <script>
-<<<<<<< HEAD
         // DOM Elements
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const mainChatArea = document.getElementById('mainChatArea');
-=======
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
         const chatMessages = document.getElementById('chatMessages');
         const chatForm = document.getElementById('chatForm');
         const userInput = document.getElementById('userInput');
         const sendButton = document.getElementById('sendButton');
         const charCount = document.getElementById('charCount');
-<<<<<<< HEAD
         const newChatBtn = document.getElementById('newChatBtn');
         const sidebarTabs = document.querySelectorAll('.sidebar-tab');
         const historyList = document.getElementById('historyList');
@@ -340,27 +305,6 @@
             updateCharCount();
         }
 
-=======
-
-        // Auto-resize textarea
-        userInput.addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
-            charCount.textContent = this.value.length;
-        });
-
-        // Handle Enter key (Shift+Enter for new line, Enter to send)
-        userInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                if (this.value.trim()) {
-                    chatForm.dispatchEvent(new Event('submit'));
-                }
-            }
-        });
-
-        // Scroll to bottom function
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
         function scrollToBottom() {
             chatMessages.scrollTo({
                 top: chatMessages.scrollHeight,
@@ -368,12 +312,7 @@
             });
         }
 
-<<<<<<< HEAD
         function addMessage(content, isUser = false, isLoading = false, fileInfo = null) {
-=======
-        // Add message to chat
-        function addMessage(content, isUser = false, isLoading = false) {
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
 
@@ -388,7 +327,6 @@
                     </div>
                 `;
             } else {
-<<<<<<< HEAD
                 // Convert newlines to <br> and handle basic formatting
                 const formattedContent = content
                     .replace(/\n/g, '<br>')
@@ -442,18 +380,10 @@
                         </div>
                     `;
                 }
-=======
-                messageDiv.innerHTML = `
-                    <div class="message-content">
-                        <div class="message-text">${content}</div>
-                    </div>
-                `;
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
             }
 
             chatMessages.appendChild(messageDiv);
             scrollToBottom();
-<<<<<<< HEAD
             
             // Setup action buttons untuk pesan AI baru
             if (!isUser && !isLoading) {
@@ -524,12 +454,6 @@
             });
         }
 
-=======
-            return messageDiv;
-        }
-
-        // Remove welcome message
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
         function removeWelcomeMessage() {
             const welcome = document.querySelector('.welcome-message');
             if (welcome) {
@@ -537,21 +461,7 @@
             }
         }
 
-<<<<<<< HEAD
         async function handleChatSubmit(e) {
-=======
-        // Send suggestion
-        function sendSuggestion(text) {
-            userInput.value = text;
-            userInput.style.height = 'auto';
-            userInput.style.height = Math.min(userInput.scrollHeight, 150) + 'px';
-            charCount.textContent = text.length;
-            chatForm.dispatchEvent(new Event('submit'));
-        }
-
-        // Handle form submission
-        chatForm.addEventListener('submit', async function (e) {
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
             e.preventDefault();
 
             const message = userInput.value.trim();
@@ -566,11 +476,7 @@
             // Clear input
             userInput.value = '';
             userInput.style.height = 'auto';
-<<<<<<< HEAD
             updateCharCount();
-=======
-            charCount.textContent = '0';
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
 
             // Disable form
             sendButton.disabled = true;
@@ -585,14 +491,10 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-<<<<<<< HEAD
                     body: JSON.stringify({ 
                         message: message,
                         conversation_id: currentConversationId 
                     })
-=======
-                    body: JSON.stringify({ message: message })
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
                 });
 
                 const data = await response.json();
@@ -601,7 +503,6 @@
                 loadingMessage.remove();
 
                 if (data.success) {
-<<<<<<< HEAD
                     addMessage(data.response, false);
                     
                     // Update conversation ID if this is a new conversation
@@ -617,24 +518,12 @@
                 loadingMessage.remove();
                 addMessage('❌ Error: Gagal terhubung ke server', false);
                 console.error('Chat error:', error);
-=======
-                    // Format response (preserve newlines)
-                    const formattedResponse = data.response.replace(/\n/g, '<br>');
-                    addMessage(formattedResponse, false);
-                } else {
-                    addMessage(`❌ Error: ${data.error || 'Terjadi kesalahan'}`, false);
-                }
-            } catch (error) {
-                loadingMessage.remove();
-                addMessage(`❌ Error: Gagal terhubung ke server. ${error.message}`, false);
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
             } finally {
                 // Re-enable form
                 sendButton.disabled = false;
                 userInput.disabled = false;
                 userInput.focus();
             }
-<<<<<<< HEAD
         }
 
         // File Upload Functions
@@ -905,26 +794,16 @@
         }
 
         // Get provider info
-=======
-        });
-
-        // Get provider info on load
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
         fetch('/api/provider')
             .then(res => res.json())
             .then(data => {
                 if (data.provider) {
-<<<<<<< HEAD
-=======
-                    const badge = document.getElementById('providerBadge');
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
                     const providerNames = {
                         'openai': 'ChatGPT',
                         'deepseek': 'DeepSeek',
                         'groq': 'Groq',
                         'anthropic': 'Claude'
                     };
-<<<<<<< HEAD
                     const badgeElement = document.getElementById('providerBadge');
                     if (badgeElement) {
                         badgeElement.textContent = providerNames[data.provider] || data.provider;
@@ -932,15 +811,6 @@
                 }
             })
             .catch(err => console.log('Could not fetch provider info'));
-=======
-                    badge.textContent = providerNames[data.provider] || 'Open Source AI';
-                }
-            })
-            .catch(err => console.log('Could not fetch provider info'));
-
-        // Set current year
-        document.getElementById('year').textContent = new Date().getFullYear();
->>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
     </script>
 </body>
 

@@ -1,37 +1,6 @@
-# Web Framework
-flask==2.3.3
-gunicorn==21.2.0
-
-# Database
-mysql-connector-python==8.1.0
-
-# Environment Variables
-python-dotenv==1.0.0
-
-# Form Handling
-flask-wtf==1.1.1
-wtforms==3.0.1
-
-# Authentication
-flask-login==0.6.3
-werkzeug==2.3.7  # untuk password hashing
-
-# Database ORM (optional)
-flask-sqlalchemy==3.0.5
-sqlalchemy==2.0.23
-
-# Migrations (optional)
-flask-migrate==4.0.5
-alembic==1.12.1
-
-# Utilities
-requests==2.31.0
-click==8.1.7
-
-# Template (biasanya sudah include dengan Flask)
-jinja2==3.1.2
-
-# Development (optional)
-flask-debugtoolbar==0.13.1
-
+flask
+gunicorn
+python-dotenv
 groq
+Pillow
+mysql-connector-python

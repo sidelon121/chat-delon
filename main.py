@@ -1,4 +1,5 @@
 import os
+<<<<<<< HEAD
 from flask import Flask, render_template, request, send_from_directory, jsonify, send_file
 from datetime import datetime
 from dotenv import load_dotenv
@@ -8,11 +9,23 @@ from file_processor import FileProcessor
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+=======
+from flask import Flask, render_template, request, send_from_directory, jsonify
+from datetime import datetime
+from dotenv import load_dotenv
+from ai_providers import get_ai_provider
+
+app = Flask(__name__)
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
 
 # Load environment variables
 load_dotenv()
 
+<<<<<<< HEAD
 # Inisialisasi AI provider, database, file processor
+=======
+# Inisialisasi AI provider
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
 try:
     ai_provider = get_ai_provider()
     print(f"✅ AI Provider berhasil dimuat: {os.getenv('AI_PROVIDER', 'groq')}")
@@ -20,8 +33,11 @@ except Exception as e:
     print(f"⚠️  Warning: {str(e)}")
     ai_provider = None
 
+<<<<<<< HEAD
 db = ChatDatabase()
 file_processor = FileProcessor()
+=======
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
 
 # ===== ROUTES =====
 
@@ -29,19 +45,35 @@ file_processor = FileProcessor()
 def index():
     return render_template('index.html')
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
 @app.route('/chat')
 def chat():
     return render_template('chat.html')
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
 @app.route('/chat', methods=['POST'])
 def chat_api():
     """
     API endpoint untuk chat dengan AI
+<<<<<<< HEAD
+=======
+    Menerima JSON dengan format: {"message": "user message"}
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
     """
     if not ai_provider:
         return jsonify({
             "success": False,
+<<<<<<< HEAD
             "error": "AI Provider belum dikonfigurasi."
+=======
+            "error": "AI Provider belum dikonfigurasi." #Pastikan file .env sudah dibuat dengan benar.
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
         }), 500
     
     try:
@@ -53,6 +85,7 @@ def chat_api():
             }), 400
         
         user_message = data['message'].strip()
+<<<<<<< HEAD
         conversation_id = data.get('conversation_id')
         
         # Create new conversation if none
@@ -104,12 +137,48 @@ def chat_api():
             "response": ai_response,
             "conversation_id": conversation_id
         })
+=======
+        if not user_message:
+            return jsonify({
+                "success": False,
+                "error": "Message tidak boleh kosong"
+            }), 400
+        
+        # Ambil history jika ada
+        conversation_history = data.get('history', [])
+        messages = []
+
+        # Pesan sistem (aturan AI)
+        messages.append({
+            "role": "system",
+            "content": (
+                "Anda adalah asisten AI bernama CHATdelon yang dibuat oleh Farhan Akmal. "
+                "Anda ramah, informatif, punya pengetahuan luas dan ahli di berbagai bidang. "
+                "Berikan jawaban yang jelas, spesifik, dan mudah dipahami dalam bahasa Indonesia."
+                "Jika ditanya jawab dengan jujur sesuia pengetahuan anda, kalo tidak tau jawab jujur."
+            )
+        })
+
+        # Tambahkan history & pesan user
+        messages.extend(conversation_history)
+        messages.append({"role": "user", "content": user_message})
+
+        # Dapatkan respons AI
+        ai_response = ai_provider.generate_response(
+            messages=messages,
+            temperature=0.7,
+            max_tokens=20000
+        )
+
+        return jsonify({"success": True, "response": ai_response})
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
     
     except Exception as e:
         error_msg = str(e)
         print(f"Chat API Error: {error_msg}")
         return jsonify({
             "success": False,
+<<<<<<< HEAD
             "error": f"Terjadi kesalahan: {error_msg}"
         }), 500
 
@@ -230,6 +299,11 @@ def upload_file():
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
+=======
+            "error": f"Terjadi kesalahan: {error_msg[:200]}"
+        }), 500
+
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
 
 @app.route('/api/provider')
 def get_provider_info():
@@ -240,6 +314,10 @@ def get_provider_info():
         "status": "active" if ai_provider else "inactive"
     })
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(
@@ -248,6 +326,13 @@ def favicon():
         mimetype='image/png'
     )
 
+<<<<<<< HEAD
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))  
     app.run(host="0.0.0.0", port=port)
+=======
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))  # Gunakan PORT dari Railway
+    app.run(host="0.0.0.0", port=port)
+>>>>>>> 6c1e03e2678e28d40f49769e03bb2dbeb8697abe

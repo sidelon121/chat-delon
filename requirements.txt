@@ -3,8 +3,6 @@ gunicorn
 python-dotenv
 groq
 Pillow
-mysql-connector-python
-groq
 pytesseract
 pypdf2
-
+sqlite3

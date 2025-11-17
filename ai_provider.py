@@ -17,7 +17,7 @@ class AIProvider:
                 temperature=temperature,
                 max_tokens=max_tokens
             )
-            return response.choices[0].message["content"]
+            return response.choices[0].message.content
         except Exception as e:
             return f"[AI ERROR] {str(e)}"
 

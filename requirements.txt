@@ -1,8 +1,0 @@
-flask
-gunicorn
-python-dotenv
-groq
-Pillow
-pytesseract
-pypdf2
-sqlite3

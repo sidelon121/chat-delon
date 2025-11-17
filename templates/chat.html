@@ -28,7 +28,25 @@
             </nav>
         </div>
     </header>
-
+    </header>
+    
+    <!-- ✅ TAMBAHKAN INI: Mobile Menu Toggle Button -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" style="display: none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+    
+    <!-- ✅ TAMBAHKAN INI: Overlay untuk mobile sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- LANJUTAN KODE YANG SUDAH ADA -->
+    <div class="chat-app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            ... [kode sidebar yang sudah ada] ...
     <!-- Main Chat Container dengan Sidebar -->
     <div class="chat-app-container">
         <!-- Sidebar -->
@@ -525,6 +543,120 @@
                 userInput.focus();
             }
         }
+        
+        function setupMobileView() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const sidebar = document.getElementById('sidebar');
+            
+            // Check if mobile
+            function checkMobile() {
+                return window.innerWidth <= 768;
+            }
+            
+            // Toggle mobile sidebar
+            function toggleMobileSidebar() {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('active');
+                
+                if (sidebar.classList.contains('open')) {
+                    // Prevent body scroll when sidebar is open
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    // Restore body scroll
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            // Close mobile sidebar
+            function closeMobileSidebar() {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            // Update mobile UI based on screen size
+            function updateMobileUI() {
+                const isMobile = checkMobile();
+                
+                if (isMobile) {
+                    mobileMenuToggle.style.display = 'flex';
+                    sidebar.classList.remove('collapsed');
+                    isSidebarOpen = false;
+                } else {
+                    mobileMenuToggle.style.display = 'none';
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            // Event listeners untuk mobile
+            mobileMenuToggle.addEventListener('click', toggleMobileSidebar);
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+            
+            // Close sidebar when clicking on history items (mobile)
+            document.addEventListener('click', function(e) {
+                if (checkMobile() && 
+                    (e.target.closest('.history-item') || 
+                     e.target.closest('.sidebar-tab') ||
+                     e.target.closest('.new-chat-btn'))) {
+                    setTimeout(closeMobileSidebar, 300);
+                }
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', updateMobileUI);
+            
+            // Initial setup
+            updateMobileUI();
+        }
+        
+        // ✅ TAMBAHKAN INI: Close mobile sidebar function
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // ✅ UPDATE INI: Perbaiki toggleSidebar function
+        function toggleSidebar() {
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Di mobile, gunakan mobile sidebar toggle
+                const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+                if (mobileMenuToggle) {
+                    mobileMenuToggle.click();
+                }
+            } else {
+                // Di desktop, gunakan toggle biasa
+                isSidebarOpen = !isSidebarOpen;
+                sidebar.classList.toggle('collapsed', !isSidebarOpen);
+                mainChatArea.classList.toggle('expanded', !isSidebarOpen);
+                
+                // Update toggle button icon
+                const icon = sidebarToggle.querySelector('svg');
+                if (isSidebarOpen) {
+                    icon.innerHTML = '<path d="M19 12H5M12 19l-7-7 7-7"/>';
+                } else {
+                    icon.innerHTML = '<path d="M5 12h14M12 5l7 7-7 7"/>';
+                }
+            }
+        }
+        
+        // ✅ TAMBAHKAN INI: Di DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConversations();
+            setupEventListeners();
+            updateCharCount();
+            setCurrentYear();
+            setupMobileView(); // ✅ Panggil setup mobile
+        });
+
 
         // File Upload Functions
         function handleFileSelect(e) {

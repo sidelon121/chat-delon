@@ -12,7 +12,7 @@ class AIProvider:
     def generate_response(self, messages, temperature=0.7, max_tokens=40960):
         try:
             response = self.client.chat.completions.create(
-                model="mixtral-8x7b-32768",
+                model="llama-3.1-8b-instant",
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens

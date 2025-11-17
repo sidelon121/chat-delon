@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHATdelon AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='favicon_round.png') }}?v=4" type="image/png">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon_round.png') }}?v=4" type="image/png">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container flex-between">
+            <div class="brand">
+                <div class="brand-icon-wrapper">
+                    <img src="{{ url_for('static', filename='favicon.png') }}" alt="AI DELON" class="brand-icon">
+                </div>
+                <span>AI DELON</span>
+            </div>
+            <nav class="nav">
+                <a href="/" class="nav-link">Beranda</a>
+                <a href="/chat" class="nav-link active">Chat</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Chat Container dengan Sidebar -->
+    <div class="chat-app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <span class="btn-icon">+</span>
+                    Obrolan Baru
+                </button>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="sidebar-tabs">
+                <button class="sidebar-tab active" data-tab="history">
+                    <span class="tab-icon">📚</span>
+                    <span class="tab-text">Riwayat</span>
+                </button>
+                <button class="sidebar-tab" data-tab="upload">
+                    <span class="tab-icon">📁</span>
+                    <span class="tab-text">Upload File</span>
+                </button>
+            </div>
+
+            <div class="sidebar-content">
+                <!-- History Tab -->
+                <div class="tab-pane active" id="history-tab">
+                    <div class="history-list" id="historyList">
+                        <div class="history-empty">
+                            <p>Belum ada riwayat obrolan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Tab -->
+                <div class="tab-pane" id="upload-tab">
+                    <div class="upload-section">
+                        <h4>Upload File</h4>
+                        <p class="upload-info">Unggah gambar atau dokumen untuk dianalisis AI</p>
+                        
+                        <form class="upload-form" id="uploadForm">
+                            <div class="form-group">
+                                <label>Pilih Obrolan:</label>
+                                <select id="conversationSelect" class="form-select" required>
+                                    <option value="">-- Buat obrolan baru --</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Pesan untuk AI (opsional):</label>
+                                <textarea id="uploadMessage" class="form-textarea" 
+                                          placeholder="Contoh: 'Analisis gambar ini dan jelaskan apa yang kamu lihat' 
+'Ringkas dokumen PDF ini' 
+'Jelaskan isi file teks ini'"
+                                          rows="3"></textarea>
+                            </div>
+
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <div class="upload-placeholder">
+                                    <span class="upload-icon">📁</span>
+                                    <p>Klik untuk memilih file atau seret ke sini</p>
+                                    <small>Support: JPG, PNG, PDF, TXT, DOCX (Max 10MB)</small>
+                                </div>
+                                <input type="file" id="fileInput" class="file-input" accept="image/*,.pdf,.txt,.docx" required>
+                            </div>
+
+                            <div class="upload-preview" id="uploadPreview" style="display: none;">
+                                <div class="preview-header">
+                                    <span class="preview-filename" id="previewFilename"></span>
+                                    <button type="button" class="preview-remove" id="previewRemove">×</button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="upload-submit-btn" id="uploadSubmit" disabled>
+                                <span class="btn-icon">🔍</span>
+                                Upload & Analisis dengan AI
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-chat-area" id="mainChatArea">
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <div class="welcome-icon">🤖</div>
+                    <h2>Halo! Saya CHATdelon AI</h2>
+                    <p>Saya siap membantu Anda dengan berbagai pertanyaan dan diskusi. Silakan mulai obrolan baru atau lanjutkan percakapan sebelumnya.</p>
+                    
+                    <div class="suggestions">
+                        <button class="suggestion-btn" data-suggestion="Apa itu Artificial Intelligence?">
+                            🤖 Apa itu AI?
+                        </button>
+                        <button class="suggestion-btn" data-suggestion="Bantu saya membuat rencana belajar programming">
+                            💻 Belajar Programming
+                        </button>
+                        <button class="suggestion-btn" data-suggestion="Jelaskan tentang machine learning">
+                            🧠 Machine Learning
+                        </button>
+                        <button class="suggestion-btn" data-suggestion="Buatkan contoh kode Python sederhana">
+                            🐍 Contoh Kode Python
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <form id="chatForm" class="chat-form">
+                    <div class="input-wrapper">
+                        <textarea id="userInput" class="chat-input" placeholder="Ketik pesan Anda di sini..." rows="1" maxlength="20000"></textarea>
+                        <button type="submit" class="send-button" id="sendButton" aria-label="Kirim pesan">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="input-footer">
+                        <span class="char-count"><span id="charCount">0</span>/20000</span>
+                        <span class="ai-info">CHATdelon AI</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>© <span id="year"></span> FARHAN AKMAL</p>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mainChatArea = document.getElementById('mainChatArea');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const charCount = document.getElementById('charCount');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const sidebarTabs = document.querySelectorAll('.sidebar-tab');
+        const historyList = document.getElementById('historyList');
+        const conversationSelect = document.getElementById('conversationSelect');
+        const fileInput = document.getElementById('fileInput');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadPreview = document.getElementById('uploadPreview');
+        const previewFilename = document.getElementById('previewFilename');
+        const previewRemove = document.getElementById('previewRemove');
+        const uploadSubmit = document.getElementById('uploadSubmit');
+        const uploadMessage = document.getElementById('uploadMessage');
+
+        // State
+        let currentConversationId = null;
+        let isSidebarOpen = true;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConversations();
+            setupEventListeners();
+            updateCharCount();
+            setCurrentYear();
+        });
+
+        function setupEventListeners() {
+            // Sidebar toggle
+            sidebarToggle.addEventListener('click', toggleSidebar);
+
+            // New chat button
+            newChatBtn.addEventListener('click', createNewChat);
+
+            // Sidebar tabs
+            sidebarTabs.forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+
+            // Auto-resize textarea
+            userInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+                updateCharCount();
+            });
+
+            // Enter key handling
+            userInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (this.value.trim()) {
+                        chatForm.dispatchEvent(new Event('submit'));
+                    }
+                }
+            });
+
+            // Chat form submission
+            chatForm.addEventListener('submit', handleChatSubmit);
+
+            // File upload handling
+            fileInput.addEventListener('change', handleFileSelect);
+            fileUploadArea.addEventListener('click', () => fileInput.click());
+            fileUploadArea.addEventListener('dragover', handleDragOver);
+            fileUploadArea.addEventListener('drop', handleFileDrop);
+            previewRemove.addEventListener('click', clearFilePreview);
+            uploadForm.addEventListener('submit', handleFileUpload);
+
+            // Suggestion buttons
+            document.querySelectorAll('.suggestion-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const suggestion = this.getAttribute('data-suggestion');
+                    sendSuggestion(suggestion);
+                });
+            });
+        }
+
+        function toggleSidebar() {
+            isSidebarOpen = !isSidebarOpen;
+            sidebar.classList.toggle('collapsed', !isSidebarOpen);
+            mainChatArea.classList.toggle('expanded', !isSidebarOpen);
+            
+            // Update toggle button icon
+            const icon = sidebarToggle.querySelector('svg');
+            if (isSidebarOpen) {
+                icon.innerHTML = '<path d="M19 12H5M12 19l-7-7 7-7"/>';
+            } else {
+                icon.innerHTML = '<path d="M5 12h14M12 5l7 7-7 7"/>';
+            }
+        }
+
+        function switchTab(tabName) {
+            // Update active tab
+            sidebarTabs.forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+
+            // Show active pane
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.toggle('active', pane.id === tabName + '-tab');
+            });
+
+            // Load data if needed
+            if (tabName === 'history') {
+                loadConversations();
+            }
+        }
+
+        function updateCharCount() {
+            charCount.textContent = userInput.value.length;
+        }
+
+        function setCurrentYear() {
+            document.getElementById('year').textContent = new Date().getFullYear();
+        }
+
+        // Chat Functions
+        function createNewChat() {
+            currentConversationId = null;
+            chatMessages.innerHTML = `
+                <div class="welcome-message">
+                    <div class="welcome-icon">🤖</div>
+                    <h2>Halo! Saya CHATdelon AI</h2>
+                    <p>Obrolan baru telah dimulai. Silakan tanyakan apa yang ingin Anda ketahui!</p>
+                </div>
+            `;
+            userInput.value = '';
+            userInput.focus();
+            updateCharCount();
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTo({
+                top: chatMessages.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        function addMessage(content, isUser = false, isLoading = false, fileInfo = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+
+            if (isLoading) {
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Convert newlines to <br> and handle basic formatting
+                const formattedContent = content
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code>$1</code>');
+
+                if (isUser && fileInfo) {
+                    // Tampilkan pesan user dengan file info
+                    messageDiv.innerHTML = `
+                        <div class="message-content">
+                            <div class="file-info">
+                                <strong>📁 File: ${fileInfo.filename}</strong>
+                                ${fileInfo.message ? `<p>${fileInfo.message}</p>` : ''}
+                            </div>
+                            ${formattedContent ? `<div class="message-text">${formattedContent}</div>` : ''}
+                        </div>
+                    `;
+                } else if (isUser) {
+                    messageDiv.innerHTML = `
+                        <div class="message-content">
+                            <div class="message-text">${formattedContent}</div>
+                        </div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="message-content">
+                            <div class="message-text">${formattedContent}</div>
+                            <div class="message-actions">
+                                <button class="action-btn copy-btn" title="Salin teks">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                                <button class="action-btn like-btn" title="Suka">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                                <button class="action-btn share-btn" title="Bagikan">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="18" cy="5" r="3"></circle>
+                                        <circle cx="6" cy="12" r="3"></circle>
+                                        <circle cx="18" cy="19" r="3"></circle>
+                                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+            
+            // Setup action buttons untuk pesan AI baru
+            if (!isUser && !isLoading) {
+                setupMessageActions(messageDiv);
+            }
+            
+            return messageDiv;
+        }
+
+        function setupMessageActions(messageElement) {
+            const copyBtn = messageElement.querySelector('.copy-btn');
+            const likeBtn = messageElement.querySelector('.like-btn');
+            const shareBtn = messageElement.querySelector('.share-btn');
+            
+            if (copyBtn) {
+                copyBtn.addEventListener('click', function() {
+                    const messageText = messageElement.querySelector('.message-text').textContent;
+                    navigator.clipboard.writeText(messageText).then(() => {
+                        // Feedback visual
+                        const originalHTML = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                        copyBtn.style.color = '#10b981';
+                        
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalHTML;
+                            copyBtn.style.color = '';
+                        }, 2000);
+                    });
+                });
+            }
+            
+            if (likeBtn) {
+                likeBtn.addEventListener('click', function() {
+                    likeBtn.classList.toggle('liked');
+                    if (likeBtn.classList.contains('liked')) {
+                        likeBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+                        likeBtn.style.color = '#ef4444';
+                    } else {
+                        likeBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+                        likeBtn.style.color = '';
+                    }
+                });
+            }
+            
+            if (shareBtn) {
+                shareBtn.addEventListener('click', function() {
+                    const messageText = messageElement.querySelector('.message-text').textContent;
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'Pesan dari CHATdelon AI',
+                            text: messageText,
+                            url: window.location.href
+                        }).catch(err => {
+                            console.log('Error sharing:', err);
+                            fallbackShare(messageText);
+                        });
+                    } else {
+                        fallbackShare(messageText);
+                    }
+                });
+            }
+        }
+
+        function fallbackShare(text) {
+            // Fallback: salin ke clipboard
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Pesan disalin ke clipboard! Anda bisa membagikannya sekarang.');
+            });
+        }
+
+        function removeWelcomeMessage() {
+            const welcome = document.querySelector('.welcome-message');
+            if (welcome) {
+                welcome.remove();
+            }
+        }
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+
+            const message = userInput.value.trim();
+            if (!message || sendButton.disabled) return;
+
+            // Remove welcome message on first message
+            removeWelcomeMessage();
+
+            // Add user message
+            addMessage(message, true);
+
+            // Clear input
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            updateCharCount();
+
+            // Disable form
+            sendButton.disabled = true;
+            userInput.disabled = true;
+
+            // Add loading message
+            const loadingMessage = addMessage('', false, true);
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        message: message,
+                        conversation_id: currentConversationId 
+                    })
+                });
+
+                const data = await response.json();
+
+                // Remove loading message
+                loadingMessage.remove();
+
+                if (data.success) {
+                    addMessage(data.response, false);
+                    
+                    // Update conversation ID if this is a new conversation
+                    if (!currentConversationId && data.conversation_id) {
+                        currentConversationId = data.conversation_id;
+                        loadConversations(); // Refresh history
+                        updateConversationSelect(); // Refresh upload dropdown
+                    }
+                } else {
+                    addMessage('❌ Error: ' + (data.error || 'Terjadi kesalahan'), false);
+                }
+            } catch (error) {
+                loadingMessage.remove();
+                addMessage('❌ Error: Gagal terhubung ke server', false);
+                console.error('Chat error:', error);
+            } finally {
+                // Re-enable form
+                sendButton.disabled = false;
+                userInput.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        // File Upload Functions
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                showFilePreview(file);
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        }
+
+        function handleFileDrop(e) {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                showFilePreview(files[0]);
+            }
+        }
+
+        function showFilePreview(file) {
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                alert('File terlalu besar. Maksimal 10MB.');
+                return;
+            }
+
+            previewFilename.textContent = file.name;
+            uploadPreview.style.display = 'block';
+            uploadSubmit.disabled = false;
+            fileUploadArea.classList.add('file-selected');
+        }
+
+        function clearFilePreview() {
+            fileInput.value = '';
+            uploadPreview.style.display = 'none';
+            uploadSubmit.disabled = true;
+            fileUploadArea.classList.remove('file-selected');
+            uploadMessage.value = '';
+        }
+
+        async function handleFileUpload(e) {
+            e.preventDefault();
+
+            const file = fileInput.files[0];
+            const conversationId = conversationSelect.value || currentConversationId;
+            const userMessage = uploadMessage.value;
+
+            if (!file || !conversationId) {
+                alert('Pilih file dan obrolan terlebih dahulu');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('conversation_id', conversationId);
+            formData.append('message', userMessage);
+
+            uploadSubmit.disabled = true;
+            uploadSubmit.innerHTML = '<span class="btn-icon">⏳</span>Menganalisis...';
+
+            try {
+                // Tampilkan pesan user SEBELUM upload (optimistic update)
+                removeWelcomeMessage();
+                
+                // Tampilkan pesan user di chat
+                const displayMessage = userMessage || `Menganalisis file: ${file.name}`;
+                addMessage(displayMessage, true, false, {
+                    filename: file.name,
+                    message: userMessage || "File diupload untuk analisis"
+                });
+
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Clear form
+                    clearFilePreview();
+                    
+                    // Tambahkan response AI ke chat
+                    if (data.ai_response) {
+                        addMessage(data.ai_response, false);
+                    }
+                    
+                    // Refresh conversation list
+                    loadConversations();
+                    
+                    // Show success message
+                    showNotification('File berhasil diupload dan dianalisis!', 'success');
+                } else {
+                    showNotification('Error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Error uploading file', 'error');
+                console.error('Upload error:', error);
+            } finally {
+                uploadSubmit.disabled = false;
+                uploadSubmit.innerHTML = '<span class="btn-icon">🔍</span>Analisis dengan AI';
+            }
+        }
+        // API Functions
+        async function loadConversations() {
+            try {
+                const response = await fetch('/api/conversations');
+                const data = await response.json();
+
+                if (data.success) {
+                    displayConversations(data.conversations);
+                    updateConversationSelect(data.conversations);
+                }
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+            }
+        }
+
+        function displayConversations(conversations) {
+            if (conversations.length === 0) {
+                historyList.innerHTML = `
+                    <div class="history-empty">
+                        <p>Belum ada riwayat obrolan</p>
+                    </div>
+                `;
+                return;
+            }
+
+            historyList.innerHTML = conversations.map(conv => `
+                <div class="history-item ${conv.id === currentConversationId ? 'active' : ''}" 
+                     onclick="loadConversationMessages(${conv.id})">
+                    <div class="history-content">
+                        <div class="history-title">${conv.title}</div>
+                        <div class="history-time">${formatTime(conv.updated_at)}</div>
+                    </div>
+                    <button class="history-delete" onclick="event.stopPropagation(); deleteConversation(${conv.id})">
+                        ×
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateConversationSelect(conversations = []) {
+            conversationSelect.innerHTML = '<option value="">-- Buat obrolan baru --</option>' +
+                conversations.map(conv => `
+                    <option value="${conv.id}" ${conv.id === currentConversationId ? 'selected' : ''}>
+                        ${conv.title}
+                    </option>
+                `).join('');
+        }
+
+        async function loadConversationMessages(conversationId) {
+            try {
+                const response = await fetch('/api/conversations/' + conversationId + '/messages');
+                const data = await response.json();
+
+                if (data.success) {
+                    currentConversationId = conversationId;
+                    displayMessages(data.messages);
+                    loadConversations(); // Refresh to update active state
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        function displayMessages(messages) {
+            chatMessages.innerHTML = '';
+            
+            if (messages.length === 0) {
+                chatMessages.innerHTML = `
+                    <div class="welcome-message">
+                        <div class="welcome-icon">🤖</div>
+                        <h2>Obrolan Dimuat</h2>
+                        <p>Obrolan ini belum memiliki pesan. Mulai percakapan sekarang!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            messages.forEach(msg => {
+                if (msg.file_name) {
+                    // Tampilkan pesan dengan file info
+                    addMessage(msg.content, msg.role === 'user', false, {
+                        filename: msg.file_name,
+                        message: msg.content
+                    });
+                } else {
+                    addMessage(msg.content, msg.role === 'user');
+                }
+            });
+        }
+
+        async function deleteConversation(conversationId) {
+            if (!confirm('Hapus obrolan ini?')) return;
+
+            try {
+                const response = await fetch('/api/conversations/' + conversationId, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (currentConversationId === conversationId) {
+                        createNewChat();
+                    }
+                    loadConversations();
+                }
+            } catch (error) {
+                console.error('Error deleting conversation:', error);
+            }
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Baru saja';
+            if (diffMins < 60) return diffMins + 'm yang lalu';
+            if (diffHours < 24) return diffHours + 'j yang lalu';
+            if (diffDays < 7) return diffDays + 'h yang lalu';
+            
+            return date.toLocaleDateString('id-ID');
+        }
+
+        // Suggestion function
+        function sendSuggestion(text) {
+            userInput.value = text;
+            userInput.style.height = 'auto';
+            userInput.style.height = Math.min(userInput.scrollHeight, 150) + 'px';
+            updateCharCount();
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+
+        // Notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification ' + type;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 16px;
+                border-radius: 8px;
+                background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6'};
+                color: white;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Get provider info
+        fetch('/api/provider')
+            .then(res => res.json())
+            .then(data => {
+                if (data.provider) {
+                    const providerNames = {
+                        'openai': 'ChatGPT',
+                        'deepseek': 'DeepSeek',
+                        'groq': 'Groq',
+                        'anthropic': 'Claude'
+                    };
+                    const badgeElement = document.getElementById('providerBadge');
+                    if (badgeElement) {
+                        badgeElement.textContent = providerNames[data.provider] || data.provider;
+                    }
+                }
+            })
+            .catch(err => console.log('Could not fetch provider info'));
+    </script>
+</body>
+
+</html>
